@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">	
+<h:head>
+	<title><ui:insert name="title">Demo Application</ui:insert></title>
+	<!-- <h:outputStylesheet name="../forms/css/template.css" /> -->
+	<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />	
+	<!-- <h:outputScript name="../forms/scripts/masterLayout.js" target="body"/> -->
+	<link rel="shortcut icon" type="image/x-icon" href="../forms/images/favicon.ico"/>
+</h:head>
+	 <h:body>
+        <div id="header"></div>
+        <div id="content"><ui:insert name="content">Default content</ui:insert></div>
+        <div id="footer"></div>
+    </h:body>
+</html>

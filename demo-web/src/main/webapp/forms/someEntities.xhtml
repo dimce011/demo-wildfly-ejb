@@ -1,0 +1,86 @@
+<ui:composition template="templates/masterLayout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:define name="title">Demo Application - Some Entities</ui:define>
+    <!-- <ui:param name="activeIndex" value="#{userManager.someEntities}" /> -->
+    <ui:define name="content">
+    	<!-- <h:outputScript name="../forms/scripts/someEntities.js" target="body"/> --> 
+    	<!-- <h:outputStylesheet name="../forms/css/someEntities.css" /> -->
+
+    	<h:form id="someEntitiesForm">
+    		<p:fieldset legend="SomeEntitiesLegend" id="someEntitiesFieldset">
+				<h:panelGrid columns="5" cellpadding="10" id="someEntitiesPanel">
+					<h:outputLabel for="codeIT" value="Code: ">
+						<p:inputText id="codeIT" label="codeIT" value="#{someEntities.filter.code}"/>
+					</h:outputLabel>
+					<h:outputLabel for="nameIT" value="Name: ">
+						<p:inputText id="nameIT" label="nameIT" value="#{someEntities.filter.name}"/>
+					</h:outputLabel>
+					<h:outputLabel for="descriptionIT" value="Description: ">
+						<p:inputText id="descriptionIT" label="descriptionIT" value="#{someEntities.filter.description}"/>
+					</h:outputLabel>
+<!--				<h:outputLabel for="countryAC" value="Country: " styleClass="searchCriteriaLabel">				
+						<p:autoComplete value="#{someEntities.selectedCountry}" id="countryAC" completeMethod="#{someEntities.completeCountry}" styleClass="searchCriteria" 
+										var="p" itemLabel="#{p.name}" itemValue="#{p}" converter="#{countryConverter}" forceSelection="true" />
+					</h:outputLabel>	
+ -->			</h:panelGrid>
+			</p:fieldset>
+			
+			
+			<div class="commandDiv">			
+				<p:commandButton title="Clear fieldset" value="Clear" process="@this" action="#{someEntities.resetInput()}" update=":someEntitiesForm:someEntitiesPanel" 
+								 icon="ui-icon-close" />
+				<p:commandButton title="Search Some Entities" id="SearchBtn" value="Search" action="#{someEntities.fetchSomeEntities()}"  onclick="PF('someEntitiesTableWidget').getPaginator().setPage(0);"
+								 onstart="PF('statusDialog').show();" update=":someEntitiesForm:growl :errorDialogForm :someEntitiesForm:someEntitiesTable" 
+								 onsuccess="PF('statusDialog').hide();" icon="ui-icon-search"/>
+			</div>
+			
+			<p:growl id="growl" showDetail="true"/> 
+			
+			<p:dialog modal="true" resizable="false" widgetVar="statusDialog" id="loadingDialog" header="Loading..." draggable="false" closable="false">
+				<p:graphicImage value="../forms/images/ajaxloadingbar.gif" />
+			</p:dialog>			
+			  
+			<div id="someEntitiesTableDiv" class="someEntitiesTableDiv">
+				<p:dataTable id="someEntitiesTable" var="someEntityDTO" value="#{someEntities.someEntities}" paginator="true" rows="50" 
+                			 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"  
+                 			 rowsPerPageTemplate="5,10,15, 25, 50, 100" widgetVar="someEntitiesTableWidget"   
+            	 			 emptyMessage="No records found">					  
+					<p:ajax event="page" update="@this" onstart="PF('statusDialog').show();" oncomplete="PF('statusDialog').hide();"/>
+					<f:facet name="header"><h:outputText value="List of Some Entities"/></f:facet>  
+        			<p:column headerText="Code" width="25%"><h:outputText value="#{someEntityDTO.code}"/></p:column>           			
+        			<p:column headerText="Name" width="35%"><h:outputText value="#{someEntityDTO.name}"/></p:column>
+        			<p:column headerText="Description" width="50%"><h:outputText value="#{someEntityDTO.description}"/></p:column>
+<!--				<p:column headerText="Country" width="4%">
+        				<h:outputLink id="slideCountry" disabled="true">
+	        				<h:graphicImage value="images/flags/#{serviceView.country}.png" rendered="#{serviceView.country ne null}" alt="#{serviceView.country}"/>
+	        				<p:tooltip for="slideCountry" value="#{someEntities.countryNames[serviceView.country]}" showEffect="fade" hideEffect="fade" 
+	        						   showEvent="click" hideEvent="click" styleClass="tooltip"/>
+        				</h:outputLink>
+        			</p:column>
+        			<p:column headerText="Active" width="4%">
+        				<p:graphicImage value="../console/images/cross-gray.png" rendered="#{serviceView.active eq false}"/>
+						<p:graphicImage value="../console/images/tick-gray.png" rendered="#{serviceView.active eq true}"/>
+        			</p:column>
+        			<p:column headerText="Service option name - someEntities" width="25%">
+						<p:dataTable id="someEntityDetail" value="#{serviceView.formatedSomeEntities}" var="jsonParam" styleClass="borderless">
+							<p:column style="width:60% !important"><h:outputText value="#{fn:replace(jsonParam.key, '%', '&#160;&#160;&#160;&#160;')}"/></p:column>
+							<p:column style="width:40% !important"><h:outputText value="#{fn:replace(jsonParam.value, '%', ' ')}"/></p:column>
+						</p:dataTable>
+					</p:column> -->    			
+         		</p:dataTable>
+         	</div> 	
+        </h:form> 
+
+        <h:form id="errorDialogForm">
+        	<p:dialog modal="true" dynamic="true" width="800px" height="600px" hideEffect="fade" showEffect="fade" resizable="true" widgetVar="errorDialogWidget" id="errorDialog" header="Error" draggable="true" closable="true">
+				<h:outputText value="#{someEntities.stackTrace}" style="color:red !important;white-space: pre;"/>
+			</p:dialog>
+        </h:form>
+	    
+    </ui:define>
+</ui:composition>

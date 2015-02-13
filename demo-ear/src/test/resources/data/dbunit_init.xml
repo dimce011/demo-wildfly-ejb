@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<some_entity id="1" code="CODE1" name="NAME1" description="Description of the value"/>
+	<some_entity id="2" code="DEL" name="FOR DELETE" description="Entity for Delete"/>
+</dataset>

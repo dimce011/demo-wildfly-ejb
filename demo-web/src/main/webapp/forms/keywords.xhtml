@@ -1,0 +1,96 @@
+<ui:composition template="templates/masterLayout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:define name="title">Transaction Engine - Keywords</ui:define>
+    <ui:param name="activeIndex" value="#{userManager.keywords}" />
+    <ui:define name="content">
+    	<h:outputScript name="../console/scripts/keywords.js" target="body"/> 
+    	<h:outputStylesheet name="../console/css/keywords.css" />
+
+    	<h:form id="keywordsForm">
+    		<p:fieldset legend="Keywords" styleClass="keywordsFieldset" id="keywordsFieldset">
+				<h:panelGrid columns="5" cellpadding="10" id="keywordsPanel" styleClass="keywordsPanelGrid">
+					<h:outputLabel for="shortCodeIT" value="Short code: " styleClass="searchCriteriaLabel">
+						<p:inputText id="shortCodeIT" label="shortCodeIT" value="#{keywords.shortCode}" styleClass="searchCriteria"/>
+					</h:outputLabel>
+					<h:outputLabel for="keywordIT" value="Keyword: " styleClass="searchCriteriaLabel">
+						<p:inputText id="keywordIT" label="keywordIT" value="#{keywords.keyword}" styleClass="searchCriteria"/>
+					</h:outputLabel>					
+					<h:outputLabel for="countryAC" value="Country: " styleClass="searchCriteriaLabel">				
+						<p:autoComplete value="#{keywords.selectedCountry}" id="countryAC" completeMethod="#{keywords.completeCountry}" styleClass="searchCriteria" 
+										var="p" itemLabel="#{p.name}" itemValue="#{p}" converter="#{countryConverter}" forceSelection="true" />
+					</h:outputLabel>	
+					<h:outputLabel for="providerAC" value="Provider: " styleClass="searchCriteriaLabel">				
+						<p:autoComplete value="#{keywords.selectedProvider}" id="providerAC" completeMethod="#{keywords.completeProvider}" styleClass="searchCriteria" 
+										var="p" itemLabel="#{p.code}" itemValue="#{p}" converter="provider" forceSelection="true"/>                        	  
+					</h:outputLabel>
+					<h:outputLabel for="operatorAC" value="Operator: " styleClass="searchCriteriaLabel">				
+						<p:autoComplete value="#{keywords.selectedOperatorCode}" id="operatorAC" completeMethod="#{keywords.completeOperator}" styleClass="searchCriteria" 
+										forceSelection="true"/>
+					</h:outputLabel>					
+				</h:panelGrid>
+			</p:fieldset>
+			
+			
+			<div class="commandDiv">			
+				<p:commandButton title="Clear fieldset" value="Clear" process="@this" action="#{keywords.resetInput()}" update=":keywordsForm:keywordsPanel" 
+								 icon="ui-icon-close" styleClass="clearButton" />
+				<p:commandButton title="Search keywords" id="SearchBtn" value="Search" action="#{keywords.fetchShortCodeKeywordServiceView()}"  onclick="PF('keywordsTableWidget').getPaginator().setPage(0);"
+								 onstart="PF('statusDialog').show();" update=":keywordsForm:growl :errorDialogForm :keywordsForm:keywordsTable" 
+								 onsuccess="PF('statusDialog').hide();" icon="ui-icon-search" styleClass="searchButton"/>
+			</div>
+			
+			<p:growl id="growl" showDetail="true"/> 
+			
+			<p:dialog modal="true" resizable="false" widgetVar="statusDialog" id="loadingDialog" header="Loading..." draggable="false" closable="false">
+				<p:graphicImage value="../console/images/ajaxloadingbar.gif" />
+			</p:dialog>			
+			  
+			<div id="keywordsTableDiv" class="keywordsTableDiv">
+				<p:dataTable styleClass="keywordsTable" var="serviceView" value="#{keywords.serviceViews}" paginator="true" rows="50" 
+                			 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"  
+                 			 rowsPerPageTemplate="5,10,15, 25, 50, 100" widgetVar="keywordsTableWidget"   
+            	 			 emptyMessage="No records found" id="keywordsTable">					  
+					<p:ajax event="page" update="@this" onstart="PF('statusDialog').show();" oncomplete="PF('statusDialog').hide();"/>
+					<f:facet name="header"><h:outputText value="List of Service views" styleClass="keywordsTableHeader"/></f:facet>  
+        			<p:column headerText="Short code" width="8%"><h:outputText value="#{serviceView.number}"/></p:column>           			
+        			<p:column headerText="Country" width="4%">
+        				<h:outputLink id="slideCountry" disabled="true">
+	        				<h:graphicImage value="images/flags/#{serviceView.country}.png" rendered="#{serviceView.country ne null}" alt="#{serviceView.country}"/>
+	        				<p:tooltip for="slideCountry" value="#{keywords.countryNames[serviceView.country]}" showEffect="fade" hideEffect="fade" 
+	        						   showEvent="click" hideEvent="click" styleClass="tooltip"/>
+        				</h:outputLink>
+        			</p:column>  
+        			<p:column headerText="Operator" width="10%"><h:outputText value="#{serviceView.operator}"/></p:column>
+        			<p:column headerText="Provider" width="10%"><h:outputText value="#{serviceView.provider}"/></p:column>   
+        			<p:column headerText="Price" width="5%"><h:outputText value="#{serviceView.price}"/></p:column>
+        			<p:column headerText="Service logical name - description">
+        				<h:outputText value="#{serviceView.logicalName} - #{serviceView.description}"/>
+        			</p:column>    	
+        			<p:column headerText="Billing type" width="6%"><h:outputText value="#{serviceView.billingTypeMP}"/></p:column>
+        			<p:column headerText="Active" width="4%">
+        				<p:graphicImage value="../console/images/cross-gray.png" rendered="#{serviceView.active eq false}"/>
+						<p:graphicImage value="../console/images/tick-gray.png" rendered="#{serviceView.active eq true}"/>
+        			</p:column>
+					<p:column headerText="Service option name - keywords" width="25%">
+						<p:dataTable id="keywordDetail" value="#{serviceView.formatedKeywords}" var="jsonParam" styleClass="borderless">
+							<p:column style="width:60% !important"><h:outputText value="#{fn:replace(jsonParam.key, '%', '&#160;&#160;&#160;&#160;')}"/></p:column>
+							<p:column style="width:40% !important"><h:outputText value="#{fn:replace(jsonParam.value, '%', ' ')}"/></p:column>
+						</p:dataTable>
+					</p:column>
+         		</p:dataTable>
+         	</div> 	
+        </h:form> 
+
+        <h:form id="errorDialogForm">
+        	<p:dialog modal="true" dynamic="true" width="800px" height="600px" hideEffect="fade" showEffect="fade" resizable="true" styleClass="errorDialog" widgetVar="errorDialogWidget" id="errorDialog" header="Error" draggable="true" closable="true">
+				<h:outputText value="#{keywords.stackTrace}" style="color:red !important;white-space: pre;"/>
+			</p:dialog>
+        </h:form>
+	    
+    </ui:define>
+</ui:composition>
