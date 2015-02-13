@@ -10,7 +10,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -37,13 +36,22 @@ public abstract class CommonIT {
 	public void setUp() throws DemoBusinessException {
 		try {
 			
-			Properties jndiProperties = new Properties();
-			jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-//			jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
-//			jndiProperties.put(Context.PROVIDER_URL, "http-remoting://localhost:8080");
-			initialContext = new InitialContext(jndiProperties);
-
-//			initialContext = new InitialContext();
+			//EJB Client Settings
+/*			Properties prop = new Properties();
+			prop.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
+*/
+			
+			//Java Naming (JNDI) Settings
+/*			Properties prop = new Properties();
+			prop.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
+			prop.put(Context.PROVIDER_URL, "http-remoting://127.0.0.1:8080");
+			prop.put(Context.SECURITY_PRINCIPAL, "dimce011");
+			prop.put(Context.SECURITY_CREDENTIALS, "Dimce011");
+			prop.put("jboss.naming.client.ejb.context", true);
+			
+			Context initialContext = new InitialContext(prop);
+*/
+			initialContext = new InitialContext();
 		    
 		} catch (NamingException e) {
 			throw new DemoBusinessException(e);

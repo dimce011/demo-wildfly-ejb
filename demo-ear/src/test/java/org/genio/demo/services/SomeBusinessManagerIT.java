@@ -1,15 +1,12 @@
 package org.genio.demo.services;
 
 import java.util.List;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 import org.genio.demo.CommonIT;
 import org.genio.demo.dto.SomeEntityDTO;
 import org.genio.demo.exception.DemoBusinessException;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -26,12 +23,6 @@ public class SomeBusinessManagerIT extends CommonIT {
 		super.setUp();
 		try {
 
-			
-			Properties prop = new Properties();
-			prop.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-
-			Context initialContext = new InitialContext(prop);
-			
 			//Application name, if not specified - the name of ear archive by default.
 			final String appName = "demo";
 			//Module name, if not specified - the name of ejb archive by default.
@@ -41,16 +32,19 @@ public class SomeBusinessManagerIT extends CommonIT {
 			//Internal - Our - convention.
 			final String beanName = SomeBusinessManager.class.getSimpleName();
 			final String viewClassName = SomeBusinessManager.class.getName();
-			
-			String jndiValue = "ejb:" + appName + "/" + moduleName
+
+ 			//EJB Client Settings			
+/*			String jndiValue = "ejb:" + appName + "/" + moduleName
 					+ "/" + distinctName + "/" + beanName + "!" + viewClassName;
 			log.info("jndiValue: {}", jndiValue);
-			
-			// let's do the lookup
-			SomeBusinessManager someBusinessManager = (SomeBusinessManager) initialContext.lookup(jndiValue);
-			List<SomeEntityDTO> someEntityDTOs = someBusinessManager. getAllSomeEntityDTOs();
-			log.info("Result: {}", someEntityDTOs);
-			
+*/
+			//Java Naming (JNDI) Settings
+			String jndiValue = "" + appName + "/" + moduleName
+					+ "/" + distinctName + "/" + beanName + "!" + viewClassName;
+
+			//Let's do the lookup - Always the same
+			someBusinessManager = (SomeBusinessManager) initialContext.lookup(jndiValue);
+
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new DemoBusinessException("Could not lookup SomeBusinessManager!");
@@ -66,14 +60,16 @@ public class SomeBusinessManagerIT extends CommonIT {
 	@Test
 	public void testGetAllSomeEntityDTOs() {
 		
-/*		List<SomeEntityDTO> someEntityDTOs = someBusinessManager. getAllSomeEntityDTOs();
+		List<SomeEntityDTO> someEntityDTOs = someBusinessManager. getAllSomeEntityDTOs();
+		log.info("All Some Entities: {}", someEntityDTOs);
 		Assert.assertNotNull(someEntityDTOs);
 		Assert.assertEquals(2, someEntityDTOs.size());
 		SomeEntityDTO firstSomeEntityDTO = someEntityDTOs.get(0);
+		log.info("Firts Some Entity: {}", firstSomeEntityDTO);	
 		Assert.assertNotNull(firstSomeEntityDTO);
 		Assert.assertEquals("CODE1", firstSomeEntityDTO.getCode());
 		Assert.assertEquals("NAME1", firstSomeEntityDTO.getName());
 		Assert.assertEquals("Description of the value", firstSomeEntityDTO.getDescription());
-*/	}
+	}
 
 }
