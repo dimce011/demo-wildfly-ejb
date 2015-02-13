@@ -37,16 +37,6 @@
 
 	<build>
 		<finalName>demo</finalName>
-		<testResources>
-	  		<testResource>
-	  			<directory>src/test/resources</directory>
-	  			<filtering>true</filtering>
-	  		</testResource>
-	  		<testResource>
-	  			<directory>src/test/resources/data</directory>
-	  			<filtering>true</filtering>
-	  		</testResource>
-	  	</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -142,6 +132,14 @@
 			<artifactId>demo-service</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.genio.demo</groupId>
+			<artifactId>demo-service</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.genio.demo</groupId>
@@ -154,13 +152,7 @@
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-ejb-client-bom</artifactId>
 			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.wildfly</groupId>
-			<artifactId>wildfly-ejb-client-bom</artifactId>
-			<type>pom</type>
-			<scope>test</scope>
+			<scope>import</scope>
 		</dependency>
 		<!-- ALL NEXT DEPENDENCIES ARE FOR JBOSS EJB CLIENT! -->
 <!--	<dependency>
